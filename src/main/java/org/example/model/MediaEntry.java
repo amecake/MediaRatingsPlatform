@@ -1,14 +1,7 @@
-package org.example;
-
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+package org.example.model;
 
 import java.util.ArrayList;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class MediaEntry {
     private String title;
     private String description;
