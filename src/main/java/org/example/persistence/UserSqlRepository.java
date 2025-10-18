@@ -38,23 +38,30 @@ public class UserSqlRepository implements IUserRepository {
     }
 
     public void login(User user) {
-        // Check if username exists
-        String correctUser;
-        for (int i = 0; i < userList.size(); i++) {
-            if (!userList.get(i).getUsername().equals(user.getUsername())) {
-                System.out.println("User doesn't exist");
-                return;
-            } else {
-                break;
+        // Login user
+
+    }
+
+    public boolean usernameExists(String checkUser) {
+        for (int i = 0; i < UserSqlRepository.userList.size(); i++) {
+            // If current user equals checkUser, then this user exists
+            if (checkUser.equals(UserSqlRepository.userList.get(i).getUsername())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean usernameMatchPw(String checkUsername, String checkPassword) {
+        for (User currentUser : userList) {
+            // If current user's password matches with correct password, it's valid
+            if (currentUser.getUsername().equals(checkUsername)) {
+                if (currentUser.getPassword().equals(checkPassword)) {
+                    return true;
+                }
             }
         }
 
-        correctUser = user.getUsername();
-        // If username was found, check if password matches
-        if (!correctUser.equals(user.getPassword())) {
-            System.out.println("Incorrect password");
-        } else {
-            System.out.println("You have been logged in");
-        }
+        return false;
     }
 }

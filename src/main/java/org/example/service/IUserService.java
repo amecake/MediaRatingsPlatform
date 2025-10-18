@@ -4,5 +4,5 @@ import org.example.model.User;
 
 public interface IUserService {
     boolean register(User user);
-    void login(User user);
+    String login(User user);
 }

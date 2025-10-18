@@ -18,7 +18,19 @@ public class UserService implements IUserService {
         return true;
     }
 
-    public void login(User user) {
+    public String login(User checkUser) {
+        // Check if username doesn't exist
+        if (!repository.usernameExists(checkUser.getUsername())) {
+            return "Username doesn't exist";
+        }
 
+        // Check if password matches with username
+        if (!repository.usernameMatchPw(checkUser.getUsername(), checkUser.getPassword())) {
+            return "Password doesn't match username";
+        }
+
+        repository.login(checkUser);
+
+        return "success";
     }
 }
