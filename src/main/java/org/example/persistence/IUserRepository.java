@@ -4,6 +4,6 @@ package org.example.persistence;
 import org.example.model.User;
 
 public interface IUserRepository {
-    void register(User user);
+    boolean register(User user);
     void login(User user);
 }
