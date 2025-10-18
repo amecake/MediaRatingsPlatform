@@ -15,27 +15,26 @@ public class UserSqlRepository implements IUserRepository {
         return instance;
     }
 
-    public boolean register(User newUser) {
-        // First check if username already exists
-        for (int i = 0; i < UserSqlRepository.userList.size(); i++) {
-            // In case new username matches with an existing, return false
-            if (newUser.getUsername().equals(UserSqlRepository.userList.get(i).getUsername())) {
-                return true;
-            }
-        }
-
-        // Has to first set username and password with given items
-        newUser.setUsername(newUser.getUsername());
-        newUser.setPassword(newUser.getPassword());
+    public void register(User newUser) {
+        // Add user to the user list
         UserSqlRepository.userList.add(newUser);
         System.out.println(newUser.getUsername() + " has been registered!");
 
         // Print currently registered users
         for (int i = 0; i < UserSqlRepository.userList.size(); i++) {
-            System.out.println("User " + (i+1) + ":\n" + newUser + "\n");
+            System.out.println("User " + (i+1) + ":\n" + UserSqlRepository.userList.get(i) + "\n");
         }
+    }
 
-        return false;
+    public boolean isUniqueUsername(String username) {
+        // Check if username is unique
+        for (int i = 0; i < UserSqlRepository.userList.size(); i++) {
+            // In case new username matches with an existing, return false
+            if (username.equals(UserSqlRepository.userList.get(i).getUsername())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void login(User user) {

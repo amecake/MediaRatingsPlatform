@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.model.User;
 import org.example.persistence.IUserRepository;
 import org.example.persistence.UserSqlRepository;
+import org.example.service.IUserService;
+import org.example.service.UserService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,20 +41,21 @@ public class RegisterHandler implements HttpHandler {
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         // Serialize JSON to User object
-        User user = mapper.readValue(body, User.class);
-        System.out.println("Parsed user: \n" + user);
+        User newUser = mapper.readValue(body, User.class);
+        System.out.println("Parsed user: \n" + newUser);
 
 
         // Now register user into repository
         IUserRepository repository = UserSqlRepository.getInstance();
-        boolean usernameExists = repository.register(user);
+        IUserService userService = new UserService();
+        boolean uniqueUsername = userService.register(newUser);
 
         // Build response
         Map<String, String> responseObject = new HashMap<>();
 
         // Response depends on state
-        if (!usernameExists) {
-            responseObject.put("message", "User " + user.getUsername() + " registered successfully");
+        if (uniqueUsername) {
+            responseObject.put("message", "User " + newUser.getUsername() + " registered successfully");
             sendResponse(exchange, 201, responseObject, mapper);
         } else {
             responseObject.put("message", "Username already exists");

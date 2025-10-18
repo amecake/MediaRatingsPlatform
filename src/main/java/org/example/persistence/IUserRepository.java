@@ -4,6 +4,7 @@ package org.example.persistence;
 import org.example.model.User;
 
 public interface IUserRepository {
-    boolean register(User user);
+    void register(User user);
+    boolean isUniqueUsername(String username);
     void login(User user);
 }
