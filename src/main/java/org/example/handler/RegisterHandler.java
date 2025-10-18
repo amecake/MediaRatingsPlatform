@@ -44,11 +44,8 @@ public class RegisterHandler implements HttpHandler {
 
 
         // Now register user into repository
-        IUserRepository repository = new UserSqlRepository();
-        repository.register(user);
-
-        // Needs to be implemented still
-        boolean usernameExists = false;
+        IUserRepository repository = UserSqlRepository.getInstance();
+        boolean usernameExists = repository.register(user);
 
         // Build response
         Map<String, String> responseObject = new HashMap<>();
