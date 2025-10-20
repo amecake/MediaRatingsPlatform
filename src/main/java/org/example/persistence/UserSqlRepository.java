@@ -1,5 +1,6 @@
 package org.example.persistence;
 
+import org.example.model.MediaEntry;
 import org.example.model.User;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class UserSqlRepository implements IUserRepository {
         return instance;
     }
 
+    @Override
     public void register(User newUser) {
         // Add user to the user list
         UserSqlRepository.userList.add(newUser);
@@ -26,6 +28,7 @@ public class UserSqlRepository implements IUserRepository {
         }
     }
 
+    @Override
     public boolean isUniqueUsername(String username) {
         // Check if username is unique
         for (int i = 0; i < UserSqlRepository.userList.size(); i++) {
@@ -37,11 +40,13 @@ public class UserSqlRepository implements IUserRepository {
         return true;
     }
 
+    @Override
     public void login(User user) {
         // Login user
 
     }
 
+    @Override
     public boolean usernameExists(String checkUser) {
         for (int i = 0; i < UserSqlRepository.userList.size(); i++) {
             // If current user equals checkUser, then this user exists
@@ -52,6 +57,7 @@ public class UserSqlRepository implements IUserRepository {
         return false;
     }
 
+    @Override
     public boolean usernameMatchPw(String checkUsername, String checkPassword) {
         for (User currentUser : userList) {
             // If current user's password matches with correct password, it's valid
@@ -63,5 +69,35 @@ public class UserSqlRepository implements IUserRepository {
         }
 
         return false;
+    }
+
+    @Override
+    public void createMediaEntry(User user, MediaEntry mediaEntry) {
+        user.createMediaEntry(mediaEntry);
+    }
+
+    @Override
+    public void listMediaEntries(User user) {
+        user.listMediaEntries();
+    }
+
+    @Override
+    public void viewMediaEntry(User user, int index) {
+        user.viewMediaEntry(index);
+    }
+
+    @Override
+    public MediaEntry getMediaEntryByIndex(User user, int index) {
+        return user.getMediaEntryByIndex(index);
+    }
+
+    @Override
+    public void updateMediaEntry(User user, MediaEntry mediaEntry, int index) {
+        user.updateMediaEntry(mediaEntry, index);
+    }
+
+    @Override
+    public void deleteMediaEntry(User user, int index) {
+        user.deleteMediaEntry(index);
     }
 }

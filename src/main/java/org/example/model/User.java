@@ -2,6 +2,8 @@ package org.example.model;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Scanner;
+
 import org.example.persistence.UserSqlRepository;
 
 import javax.print.attribute.standard.Media;
@@ -45,16 +47,38 @@ public class User {
         // Change password (and username? would require an ID i think)
     }
 
-    public static void createMediaEntry() {
-        // Add a media entry to list
+    public void createMediaEntry(MediaEntry mediaEntry) {
+        mediaEntries.add(mediaEntry);
     }
 
-    public static void updateMediaEntry() {
-        // Edit a media entry of list
+    public void listMediaEntries() {
+        System.out.println(mediaEntries);
     }
 
-    public static void deleteMediaEntry() {
+    public void viewMediaEntry(int index) {
+        System.out.println(mediaEntries.get(index));
+    }
+
+    public MediaEntry getMediaEntryByIndex(int index) {
+        return mediaEntries.get(index);
+    }
+
+    public void updateMediaEntry(MediaEntry updatedMediaEntry, int index) {
+        MediaEntry existingEntry = mediaEntries.get(index);
+
+        existingEntry.setTitle(updatedMediaEntry.getTitle());
+        existingEntry.setDescription(updatedMediaEntry.getDescription());
+        existingEntry.setType(updatedMediaEntry.getType());
+        existingEntry.setReleaseYear(updatedMediaEntry.getReleaseYear());
+        existingEntry.setGenres(updatedMediaEntry.getGenres());
+        existingEntry.setAgeRestriction(updatedMediaEntry.isAgeRestriction());
+
+        System.out.println("The existing media entry is now: " + existingEntry);
+    }
+
+    public void deleteMediaEntry(int index) {
         // Remove a media entry from list
+        mediaEntries.remove(index);
     }
 
     public static void rateMediaEntry(Rating rating, String comment) {

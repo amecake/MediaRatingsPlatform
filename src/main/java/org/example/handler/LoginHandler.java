@@ -17,7 +17,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginHandler implements HttpHandler {
+public class LoginHandler extends BaseHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         // Postman is sending a request
@@ -33,7 +33,7 @@ public class LoginHandler implements HttpHandler {
         String body = new String(inputStream.readAllBytes());
 
         // Print Postman's request body
-        System.out.println("Received: " + body);
+        //System.out.println("Received: " + body);
 
         // Create Jackson ObjectMapper
         // Make it so Jackson can access private fields
@@ -53,26 +53,20 @@ public class LoginHandler implements HttpHandler {
         Map<String, String> responseObject = new HashMap<>();
 
         // Response depends on state
-        if (!responseMessage.equals("success")) {
+        if (responseMessage.equals("success")) {
+            // Generate token on success
+            String token = TokenService.generateToken(user);
+            System.out.println("Generated token: " + token);
+            System.out.println("All tokens now: " + TokenService.getAllTokens());
+            responseObject.put("token", token);
+            sendResponse(exchange, 201, responseObject, mapper);
+        } else {
             if (responseMessage.equals("Username doesn't exist")) {
                 responseObject.put("message", "Username doesn't exist");
             } else if (responseMessage.equals("Password doesn't match username")) {
                 responseObject.put("message", "Password doesn't match username");
             }
             sendResponse(exchange, 409, responseObject, mapper);
-        } else {
-            responseObject.put("message", "User " + user.getUsername() + " logged in successfully");
-            sendResponse(exchange, 201, responseObject, mapper);
-        }
-    }
-
-    private void sendResponse(HttpExchange exchange, int statusCode,
-                              Map<String, String> responseObject, ObjectMapper mapper) throws IOException {
-        String responseJson = mapper.writeValueAsString(responseObject);
-        exchange.getResponseHeaders().add("Content-Type", "application/json");
-        exchange.sendResponseHeaders(statusCode, responseJson.getBytes().length);
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(responseJson.getBytes());
         }
     }
 }
