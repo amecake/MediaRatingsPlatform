@@ -1,6 +1,12 @@
 package org.example.restserver.server;
 
 import com.sun.net.httpserver.HttpServer;
+import org.example.logic.favorite.handler.DeleteFavoriteHandler;
+import org.example.logic.favorite.handler.MarkFavoriteHandler;
+import org.example.logic.favorite.repository.FavoriteSqlRepository;
+import org.example.logic.favorite.repository.IFavoriteRepository;
+import org.example.logic.favorite.service.FavoriteService;
+import org.example.logic.favorite.service.IFavoriteService;
 import org.example.logic.mediaentry.handler.*;
 import org.example.logic.mediaentry.persistence.IMediaRepository;
 import org.example.logic.mediaentry.persistence.MediaSqlRepository;
@@ -24,20 +30,26 @@ import java.net.InetSocketAddress;
 
 public class Server {
     public void start() throws IOException {
-        // User
+        // Users
         IUserRepository userRepository = new UserSqlRepository();
         IUserService userService = new UserService(userRepository);
 
-        // Media entry
+        // Media entries
         IMediaRepository mediaRepository = new MediaSqlRepository();
         IMediaService mediaService = new MediaService(mediaRepository);
 
-        // Rating
+        // Ratings
         IRatingRepository ratingRepository = new RatingSqlRepository();
         IRatingService ratingService = new RatingService(ratingRepository);
 
+        // Favorites
+        IFavoriteRepository favoriteRepository = new FavoriteSqlRepository();
+        IFavoriteService favoriteService = new FavoriteService(favoriteRepository);
+
+
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        // User
+
+        // Users
         server.createContext("/api/users/register", new RegisterHandler(userService));
         server.createContext("/api/users/login", new LoginHandler(userService));
 
@@ -52,6 +64,11 @@ public class Server {
         // Rating
         server.createContext("/api/rating/add", new RatingAddHandler(ratingService));
         server.createContext("/api/rating/like", new LikeRatingHandler(ratingService));
+
+        // Favorites
+        server.createContext("/api/favorite/create", new MarkFavoriteHandler(favoriteService));
+        server.createContext("/api/favorite/delete", new DeleteFavoriteHandler(favoriteService));
+
 
         server.start();
         System.out.println("Server running on port 8080");

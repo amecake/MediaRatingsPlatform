@@ -137,7 +137,7 @@ public class UserSqlRepository implements IUserRepository {
 
             if (result.next()) {
                 User user = new User();
-                user.setId(result.getInt("id"));
+                user.setId(result.getInt("user_id"));
                 user.setUsername(result.getString("username"));
                 user.setPassword(result.getString("password"));
                 return user;
