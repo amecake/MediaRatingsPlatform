@@ -47,7 +47,7 @@ public class Server {
         server.createContext("/api/media/view", new MediaViewHandler(mediaService));
         server.createContext("/api/media/update", new MediaUpdateHandler(mediaService));
         server.createContext("/api/media/delete", new MediaDeleteHandler(mediaService));
-        server.createContext("/api/media/calcAvg", new MediaCalcAvgHandler(mediaService));
+        server.createContext("/api/media/calc-avg", new MediaCalcAvgHandler(mediaService));
 
         // Rating
         server.createContext("/api/rating/add", new RatingAddHandler(ratingService));

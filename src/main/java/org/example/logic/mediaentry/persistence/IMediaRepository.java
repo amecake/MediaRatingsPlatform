@@ -10,4 +10,5 @@ public interface IMediaRepository {
     MediaEntry getMediaEntryById(int id);
     void updateMediaEntry(MediaEntry mediaEntry);
     void deleteMediaEntry(int id);
+    float getAverageScore(int media_id);
 }

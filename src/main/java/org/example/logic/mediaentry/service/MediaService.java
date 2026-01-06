@@ -70,4 +70,9 @@ public class MediaService implements IMediaService {
 
         return "success";
     }
+
+    @Override
+    public float getAverageScore(int media_id) {
+        return repository.getAverageScore(media_id);
+    }
 }

@@ -120,4 +120,34 @@ public class MediaSqlRepository implements IMediaRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public float getAverageScore(int media_id) {
+        String sql =
+                "SELECT AVG(stars) " +
+                "FROM ratings " +
+                "WHERE media_id = ?";
+
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setInt(1, media_id);
+
+            ResultSet result = stmt.executeQuery();
+
+            if (result.next()) {
+                // Return result which is the average score (float)
+                float averageScore = result.getFloat(1);
+                if (result.wasNull()) {
+                    return 0f;
+                }
+                return averageScore;
+            }
+
+            return 0f;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -10,4 +10,5 @@ public interface IMediaService {
     MediaEntry getMediaEntryByIndex(int id);
     String updateMediaEntry(User loggedInUser, MediaEntry mediaEntry);
     String deleteMediaEntry(User loggedInUser, int id);
+    float getAverageScore(int media_id);
 }
