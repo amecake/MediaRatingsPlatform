@@ -6,6 +6,11 @@ import org.example.logic.mediaentry.persistence.IMediaRepository;
 import org.example.logic.mediaentry.persistence.MediaSqlRepository;
 import org.example.logic.mediaentry.service.IMediaService;
 import org.example.logic.mediaentry.service.MediaService;
+import org.example.logic.rating.handler.RatingAddHandler;
+import org.example.logic.rating.persistence.IRatingRepository;
+import org.example.logic.rating.persistence.RatingSqlRepository;
+import org.example.logic.rating.service.IRatingService;
+import org.example.logic.rating.service.RatingService;
 import org.example.logic.user.handler.LoginHandler;
 import org.example.logic.user.handler.RegisterHandler;
 import org.example.logic.user.persistence.IUserRepository;
@@ -26,6 +31,10 @@ public class Server {
         IMediaRepository mediaRepository = new MediaSqlRepository();
         IMediaService mediaService = new MediaService(mediaRepository);
 
+        // Rating
+        IRatingRepository ratingRepository = new RatingSqlRepository();
+        IRatingService ratingService = new RatingService(ratingRepository);
+
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
         server.createContext("/api/users/register", new RegisterHandler(userService));
         server.createContext("/api/users/login", new LoginHandler(userService));
@@ -34,6 +43,7 @@ public class Server {
         server.createContext("/api/media/view", new MediaViewHandler(mediaService));
         server.createContext("/api/media/update", new MediaUpdateHandler(mediaService));
         server.createContext("/api/media/delete", new MediaDeleteHandler(mediaService));
+        server.createContext("/api/rating/create", new RatingAddHandler(ratingService));
         server.start();
         System.out.println("Server running on port 8080");
     }
