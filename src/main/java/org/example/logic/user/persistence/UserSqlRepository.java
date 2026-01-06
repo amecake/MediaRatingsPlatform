@@ -127,7 +127,7 @@ public class UserSqlRepository implements IUserRepository {
     @Override
     public User getUserByUsername(String username) {
         String sql =
-                "SELECT id, username, password FROM users WHERE username = ?";
+                "SELECT user_id, username, password FROM users WHERE username = ?";
 
         try (Connection conn = DatabaseManager.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql);

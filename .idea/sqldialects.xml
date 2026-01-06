@@ -2,6 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/org/example/logic/user/persistence/UserSqlRepository.java" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/org/example/sql/favoriteSchema.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/example/sql/mediaEntrySchema.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/example/sql/ratingSchema.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/org/example/sql/userSchema.sql" dialect="PostgreSQL" />
