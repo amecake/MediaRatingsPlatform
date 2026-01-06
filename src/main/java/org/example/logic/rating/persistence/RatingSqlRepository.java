@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class RatingSqlRepository implements IRatingRepository {
     @Override
-    public void addRating(User user, Rating rating, int media_id) {
+    public void addRatingToMedia(User user, Rating rating, int media_id) {
         String sql =
                 "INSERT INTO ratings(user_id, media_id, stars, comment) VALUES (?, ?, ?, ?)";
 
@@ -23,6 +23,30 @@ public class RatingSqlRepository implements IRatingRepository {
             stmt.setString(4, rating.getComment());
 
             stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void likeRating(int rating_id) {
+        String sql =
+                "UPDATE ratings " +
+                "SET likes = likes + 1 " +
+                "WHERE rating_id = ?";
+
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setInt(1, rating_id);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected == 0) {
+                // No rating with this ID exists
+
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

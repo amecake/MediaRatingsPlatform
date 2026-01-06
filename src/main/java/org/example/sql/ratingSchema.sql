@@ -12,4 +12,7 @@ CREATE TABLE ratings (
 ALTER TABLE ratings
     ADD COLUMN likes INTEGER default 0;
 
+ALTER TABLE ratings
+    RENAME COLUMN id TO rating_id;
+
 DROP TABLE ratings;

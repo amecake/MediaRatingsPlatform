@@ -65,7 +65,7 @@ public class RatingAddHandler extends BaseHandler implements HttpHandler {
         Rating rating = mapper.readValue(body, Rating.class);
         System.out.println("Parsed Rating: " + rating);
 
-        String responseMessage = ratingService.addRating(user, rating, id);
+        String responseMessage = ratingService.addRatingToMedia(user, rating, id);
 
         // Build response
         Map<String, String> responseObject = new HashMap<>();
