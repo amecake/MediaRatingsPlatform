@@ -5,6 +5,8 @@ import org.example.logic.user.model.User;
 import org.example.logic.DatabaseManager;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserSqlRepository implements IUserRepository {
     @Override
@@ -151,12 +153,37 @@ public class UserSqlRepository implements IUserRepository {
     }
 
     @Override
-    public void listMediaEntries(User user) {
-        user.listMediaEntries();
-    }
+    public Map<String, Object> getProfileStats(User user) {
+        String sql =
+                "SELECT COUNT(*) AS total, avg(stars) AS average " +
+                "FROM ratings " +
+                "WHERE user_id = ?";
 
-    @Override
-    public void viewMediaEntry(User user, int index) {
-        user.viewMediaEntry(index);
+        try (Connection conn = DatabaseManager.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+
+            stmt.setInt(1, user.getId());
+
+            ResultSet resultSet = stmt.executeQuery();
+
+            Map<String, Object> stats = new HashMap<>();
+
+            if (resultSet.next()) {
+
+                stats.put("totalRatings", resultSet.getInt("total"));
+
+                // If there is no ratings, average would divide by 0
+                double avg = resultSet.getDouble("average");
+                if (resultSet.wasNull()) {
+                    avg = 0;
+                }
+                stats.put("averageRating", avg);
+            }
+
+            return stats;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

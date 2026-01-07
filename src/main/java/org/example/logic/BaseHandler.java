@@ -43,12 +43,15 @@ public abstract class BaseHandler {
     }
 
     protected void sendResponse(HttpExchange exchange, int statusCode,
-                              Map<String, String> responseObject, ObjectMapper mapper) throws IOException {
+                                Object responseObject, ObjectMapper mapper)
+            throws IOException {
         String responseJson = mapper.writeValueAsString(responseObject);
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         exchange.sendResponseHeaders(statusCode, responseJson.getBytes().length);
+
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(responseJson.getBytes());
         }
     }
+
 }

@@ -4,6 +4,8 @@ package org.example.logic.user.persistence;
 import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.user.model.User;
 
+import java.util.Map;
+
 public interface IUserRepository {
     int register(User user);
     boolean isUniqueUsername(String username);
@@ -11,7 +13,5 @@ public interface IUserRepository {
     boolean usernameExists(String username);
     boolean usernameMatchPw(String username, String password);
     User getUserByUsername(String username);
-
-    void listMediaEntries(User user);
-    void viewMediaEntry(User user, int index);
+    Map<String, Object> getProfileStats(User user);
 }

@@ -4,6 +4,8 @@ import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.user.model.User;
 import org.example.logic.user.persistence.IUserRepository;
 
+import java.util.Map;
+
 public class UserService implements IUserService {
     private final IUserRepository repository;
 
@@ -47,16 +49,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String listMediaEntries(User user) {
-        repository.listMediaEntries(user);
-
-        return "success";
-    }
-
-    @Override
-    public String viewMediaEntry(User user, int index) {
-        repository.viewMediaEntry(user, index);
-
-        return "success";
+    public Map<String, Object> getProfileStats(User user) {
+        return repository.getProfileStats(user);
     }
 }

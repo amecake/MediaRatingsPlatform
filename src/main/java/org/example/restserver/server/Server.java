@@ -3,6 +3,7 @@ package org.example.restserver.server;
 import com.sun.net.httpserver.HttpServer;
 import org.example.logic.favorite.handler.DeleteFavoriteHandler;
 import org.example.logic.favorite.handler.MarkFavoriteHandler;
+import org.example.logic.favorite.handler.ViewFavoritesHandler;
 import org.example.logic.favorite.repository.FavoriteSqlRepository;
 import org.example.logic.favorite.repository.IFavoriteRepository;
 import org.example.logic.favorite.service.FavoriteService;
@@ -20,6 +21,7 @@ import org.example.logic.rating.service.IRatingService;
 import org.example.logic.rating.service.RatingService;
 import org.example.logic.user.handler.LoginHandler;
 import org.example.logic.user.handler.RegisterHandler;
+import org.example.logic.user.handler.ViewProfileHandler;
 import org.example.logic.user.persistence.IUserRepository;
 import org.example.logic.user.persistence.UserSqlRepository;
 import org.example.logic.user.service.IUserService;
@@ -52,6 +54,7 @@ public class Server {
         // Users
         server.createContext("/api/users/register", new RegisterHandler(userService));
         server.createContext("/api/users/login", new LoginHandler(userService));
+        server.createContext("/api/users/profile", new ViewProfileHandler(userService));
 
         // Media entry
         server.createContext("/api/media/create", new MediaCreateHandler(mediaService));
@@ -68,7 +71,7 @@ public class Server {
         // Favorites
         server.createContext("/api/favorite/create", new MarkFavoriteHandler(favoriteService));
         server.createContext("/api/favorite/delete", new DeleteFavoriteHandler(favoriteService));
-
+        server.createContext("/api/favorite/view", new ViewFavoritesHandler(favoriteService));
 
         server.start();
         System.out.println("Server running on port 8080");

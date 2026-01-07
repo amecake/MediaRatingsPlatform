@@ -1,5 +1,7 @@
 package org.example.logic.mediaentry.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +14,10 @@ public class MediaEntry {
     private String genre; // Single genre only
     private boolean ageRestriction;
 
+    @JsonIgnore
     private int creatorId; // Foreign key
 
+    @JsonIgnore
     private int averageScore;
 
     // For Jackson serialization
