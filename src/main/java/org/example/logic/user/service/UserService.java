@@ -27,8 +27,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String login(User checkUser) {
-        // Check if username doesn't exist
+    public String credentialsCheck(User checkUser) {
+        // Check if username exist
         if (!repository.usernameExists(checkUser.getUsername())) {
             return "Username doesn't exist";
         }
@@ -37,8 +37,6 @@ public class UserService implements IUserService {
         if (!repository.usernameMatchPw(checkUser.getUsername(), checkUser.getPassword())) {
             return "Password doesn't match username";
         }
-
-        repository.login(checkUser);
 
         return "success";
     }

@@ -15,6 +15,8 @@ import org.example.logic.mediaentry.service.IMediaService;
 import org.example.logic.mediaentry.service.MediaService;
 import org.example.logic.rating.handler.LikeRatingHandler;
 import org.example.logic.rating.handler.RatingAddHandler;
+import org.example.logic.rating.handler.RatingDeleteHandler;
+import org.example.logic.rating.handler.RatingEditHandler;
 import org.example.logic.rating.persistence.IRatingRepository;
 import org.example.logic.rating.persistence.RatingSqlRepository;
 import org.example.logic.rating.service.IRatingService;
@@ -58,7 +60,6 @@ public class Server {
 
         // Media entry
         server.createContext("/api/media/create", new MediaCreateHandler(mediaService));
-        server.createContext("/api/media/list", new MediaListHandler(mediaService));
         server.createContext("/api/media/view", new MediaViewHandler(mediaService));
         server.createContext("/api/media/update", new MediaUpdateHandler(mediaService));
         server.createContext("/api/media/delete", new MediaDeleteHandler(mediaService));
@@ -66,6 +67,8 @@ public class Server {
 
         // Rating
         server.createContext("/api/rating/add", new RatingAddHandler(ratingService));
+        server.createContext("/api/rating/edit", new RatingEditHandler(ratingService));
+        server.createContext("/api/rating/delete", new RatingDeleteHandler(ratingService));
         server.createContext("/api/rating/like", new LikeRatingHandler(ratingService));
 
         // Favorites

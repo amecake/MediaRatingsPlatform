@@ -20,19 +20,15 @@ public abstract class BaseHandler {
     }
 
     protected User checkToken(HttpExchange exchange) throws IOException {
-//        System.out.println("Headers:");
-//        exchange.getRequestHeaders().forEach((key, values) ->
-//                System.out.println(key + " : " + values)
-//        );
 
-
-
+        // Check if Authorization is sent correctly
         String authHeader = exchange.getRequestHeaders().getFirst("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             exchange.sendResponseHeaders(401, -1); // unauthorized
             return null;
         }
 
+        // Check if token is valid
         String token = authHeader.substring("Bearer ".length());
         if (!TokenService.isTokenValid(token)) {
             exchange.sendResponseHeaders(403, -1); // forbidden
@@ -40,6 +36,16 @@ public abstract class BaseHandler {
         }
 
         return TokenService.getUserByToken(token); // you can now access the logged-in user
+    }
+
+    protected Integer extractIdFromPath(HttpExchange exchange) {
+        try {
+            String path = exchange.getRequestURI().getPath();
+            String[] parts = path.split("/");
+            return Integer.parseInt(parts[parts.length - 1]);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     protected void sendResponse(HttpExchange exchange, int statusCode,

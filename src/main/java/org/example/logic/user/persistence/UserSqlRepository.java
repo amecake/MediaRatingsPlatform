@@ -14,12 +14,14 @@ public class UserSqlRepository implements IUserRepository {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection();
+             // This returns the ID (serial)
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, newUser.getUsername());
             stmt.setString(2, newUser.getPassword());
 
             int affectedRows = stmt.executeUpdate();
+            // Check if the row was added
             if (affectedRows == 0) {
                 throw new SQLException("Creating user failed, no rows affected.");
             }
@@ -27,8 +29,8 @@ public class UserSqlRepository implements IUserRepository {
             // Get the generated ID
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    int id = generatedKeys.getInt(1); // DB-generated ID
-                    newUser.setId(id);                // set it in the User object
+                    int id = generatedKeys.getInt(1); // First row -> ID (= keys)
+                    newUser.setId(id);                // set it into the newUser object
                     return id;
                 } else {
                     throw new SQLException("Creating user failed, no ID obtained.");
@@ -64,14 +66,7 @@ public class UserSqlRepository implements IUserRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        return false; // ?
-    }
-
-    @Override
-    public void login(User user) {
-        // Login user
-
+        return false;
     }
 
     @Override
@@ -88,6 +83,7 @@ public class UserSqlRepository implements IUserRepository {
             if (result.next()) {
                 int count = result.getInt(1);
 
+                // Has to be one, else the username doesn't exist
                 if (count == 1)
                     return true;
                 else
@@ -116,6 +112,7 @@ public class UserSqlRepository implements IUserRepository {
             if (result.next()) {
                 int count = result.getInt(1);
 
+                // This means return the truthfulness of this condition
                 return count == 1;
             }
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MediaEntry {
+    @JsonIgnore
     private int id; // Primary key
     private String title;
     private String description;

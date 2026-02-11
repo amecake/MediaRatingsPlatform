@@ -37,25 +37,30 @@ public class RegisterHandler extends BaseHandler implements HttpHandler {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-        // Deserialize JSON into object
+        // Serialize JSON into object
         User newUser = mapper.readValue(body, User.class);
 
         // Debugging
         //System.out.println("Parsed user: \n" + newUser);
 
         // Now register user into repository
-        boolean uniqueUsername = userService.register(newUser);
+        try {
+            boolean success = userService.register(newUser);
 
-        // Build response
-        Map<String, String> responseObject = new HashMap<>();
+            // Build response
+            Map<String, String> responseObject = new HashMap<>();
 
-        // Response depends on state
-        if (uniqueUsername) {
-            responseObject.put("message", "User " + newUser.getUsername() + " registered successfully");
-            sendResponse(exchange, 201, responseObject, mapper);
-        } else {
-            responseObject.put("message", "Username already exists");
-            sendResponse(exchange, 409, responseObject, mapper);
+            // Response depends on state
+            if (success) {
+                responseObject.put("message", "User " + newUser.getUsername() + " registered successfully");
+                sendResponse(exchange, 201, responseObject, mapper);
+            } else {
+                responseObject.put("message", "Username already exists");
+                sendResponse(exchange, 409, responseObject, mapper);
+            }
+        } catch (RuntimeException e) {
+            // If any SQL error occurs, return a server error
+            sendResponse(exchange, 500, Map.of("message", "Database error"), mapper);
         }
     }
 }

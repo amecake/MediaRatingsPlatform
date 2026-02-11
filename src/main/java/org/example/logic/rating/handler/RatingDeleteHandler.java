@@ -14,33 +14,32 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LikeRatingHandler extends BaseHandler implements HttpHandler {
+public class RatingDeleteHandler extends BaseHandler implements HttpHandler {
     private final IRatingService ratingService;
 
-    public LikeRatingHandler(IRatingService ratingService) {
+    public RatingDeleteHandler(IRatingService ratingService) {
         this.ratingService = ratingService;
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         // Verify correct request method
-        boolean valid = verifyRequestMethod(exchange, "POST");
+        boolean valid = verifyRequestMethod(exchange, "DELETE");
         if (!valid) return;
 
         // Verify token
-        User user = checkToken(exchange);
-        if (user == null) {
+        User loggedInUser = checkToken(exchange);
+        if (loggedInUser == null) {
             return;
         }
-        //System.out.println("Authenticated user ID: " + user.getId() + ", username: " + user.getUsername());
 
         // Debugging
-        //System.out.println("User is authorized: " + user.getUsername());
+        //System.out.println("User is authorized: " + loggedInUser.getUsername());
 
         // Read InputStream
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes());
-        System.out.println("Received: " + body);
+        // System.out.println("Received: " + body);
 
         // Use Jackson ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
@@ -54,21 +53,25 @@ public class LikeRatingHandler extends BaseHandler implements HttpHandler {
         }
 
         try {
-            String responseMessage = ratingService.likeRating(id);
+            String responseMessage = ratingService.deleteRating(loggedInUser, id);
 
             // Build response
             Map<String, String> responseObject = new HashMap<>();
 
+            // Response depends on state
             if (responseMessage.equals("success")) {
-                responseObject.put("message", "Like added successfully");
+                responseObject.put("message", "Rating deleted successfully");
                 sendResponse(exchange, 201, responseObject, mapper);
             } else {
-                responseObject.put("message", "An error has occurred");
-                sendResponse(exchange, 409, responseObject, mapper);
+                responseObject.put("message", responseMessage);
+                sendResponse(exchange, 400, responseObject, mapper);
             }
-        } catch (RuntimeException e) {
-            // If any SQL error occurs, return a server error
-            sendResponse(exchange, 500, Map.of("message", e.getMessage()), mapper);
+        } catch (IllegalStateException e) {
+            sendResponse(exchange, 409, Map.of("message", e.getMessage()), mapper);
         }
+        catch (RuntimeException e) {
+            sendResponse(exchange, 500, Map.of("message", "Internal server error"), mapper);
+        }
+
     }
 }

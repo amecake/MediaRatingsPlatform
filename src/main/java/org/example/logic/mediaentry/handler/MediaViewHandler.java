@@ -2,16 +2,14 @@ package org.example.logic.mediaentry.handler;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.example.logic.BaseHandler;
+import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.mediaentry.service.IMediaService;
 import org.example.logic.user.model.User;
-import org.example.logic.user.service.IUserService;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -28,7 +26,7 @@ public class MediaViewHandler extends BaseHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
 
         // Check if request method is POST
-        boolean valid = verifyRequestMethod(exchange, "POST");
+        boolean valid = verifyRequestMethod(exchange, "GET");
         if (!valid) return;
 
         User user = checkToken(exchange);
@@ -38,36 +36,40 @@ public class MediaViewHandler extends BaseHandler implements HttpHandler {
 
         System.out.println("User is authorized: " + user.getUsername());
 
-        // Save Postman's request body
+        // Read InputStream
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes());
-
-        // Print Postman's request body
         // System.out.println("Received: " + body);
 
-        // Create Jackson ObjectMapper
-        // Make it so Jackson can access private fields
+        // Use Jackson ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-        // Serialize JSON to index
-        JsonNode jsonNode = mapper.readTree(body);
-        int index = jsonNode.get("index").asInt();
-        System.out.println("Parsed Index: " + index);
-
-        // Now put it into user's media entry array
-        String responseMessage = mediaService.viewMediaEntry(user, index);
-
-        // Build response
-        Map<String, String> responseObject = new HashMap<>();
-
-        // Response depends on state
-        if (responseMessage.equals("success")) {
-            responseObject.put("message", "Media entry listed successfully");
-            sendResponse(exchange, 201, responseObject, mapper);
-        } else {
-            responseObject.put("message", "An error has occurred");
-            sendResponse(exchange, 409, responseObject, mapper);
+        // Get ID from path
+        Integer id = extractIdFromPath(exchange);
+        if (id == null) {
+            sendResponse(exchange, 400, Map.of("message", "Invalid ID"), mapper);
+            return;
         }
+
+        try {
+            // Now put it into user's media entry array
+            MediaEntry mediaEntry = mediaService.getMediaEntryByIndex(id);
+
+            // Build response
+            Map<String, String> responseObject = new HashMap<>();
+
+            if (mediaEntry == null) {
+                responseObject.put("message", "This ID is not valid");
+                sendResponse(exchange, 409, responseObject, mapper);
+            }
+
+            sendResponse(exchange, 200, mediaEntry, mapper);
+        } catch (RuntimeException e) {
+            // If any SQL error occurs, return a server error
+            sendResponse(exchange, 500, Map.of("message", "Database error"), mapper);
+            return;
+        }
+
     }
 }

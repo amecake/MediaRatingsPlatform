@@ -47,30 +47,29 @@ public class MarkFavoriteHandler extends BaseHandler implements HttpHandler {
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         // Get ID from path
-        String path = exchange.getRequestURI().getPath(); //  /media/update/0
-        String[] parts = path.split("/");
-        int media_id;
-
-        // Check if it's an int
-        try {
-            media_id = Integer.parseInt(parts[parts.length - 1]);
-        } catch (NumberFormatException e) {
-            sendResponse(exchange, 400, Map.of("message", "Not an integer"), mapper);
+        Integer id = extractIdFromPath(exchange);
+        if (id == null) {
+            sendResponse(exchange, 400, Map.of("message", "Invalid ID"), mapper);
             return;
         }
 
-        String responseMessage = service.markMediaAsFavorite(user, media_id);
+        try {
+            String responseMessage = service.markMediaAsFavorite(user, id);
 
-        // Build response
-        Map<String, String> responseObject = new HashMap<>();
+            // Build response
+            Map<String, String> responseObject = new HashMap<>();
 
-        // Response depends on state
-        if (responseMessage.equals("success")) {
-            responseObject.put("message", "Media entry marked as favorite successfully");
-            sendResponse(exchange, 201, responseObject, mapper);
-        } else {
-            responseObject.put("message", "An error has occurred");
-            sendResponse(exchange, 409, responseObject, mapper);
+            // Response depends on state
+            if (responseMessage.equals("success")) {
+                responseObject.put("message", "Media entry marked as favorite successfully");
+                sendResponse(exchange, 201, responseObject, mapper);
+            } else {
+                responseObject.put("message", "An error has occurred");
+                sendResponse(exchange, 409, responseObject, mapper);
+            }
+        } catch (RuntimeException e) {
+            // If any SQL error occurs, return a server error
+            sendResponse(exchange, 500, Map.of("message", "Database error"), mapper);
         }
     }
 }

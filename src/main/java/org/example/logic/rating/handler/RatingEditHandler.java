@@ -1,4 +1,4 @@
-package org.example.logic.mediaentry.handler;
+package org.example.logic.rating.handler;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -7,29 +7,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.example.logic.BaseHandler;
-import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.mediaentry.model.MediaType;
-import org.example.logic.mediaentry.service.IMediaService;
+import org.example.logic.rating.model.Rating;
+import org.example.logic.rating.service.IRatingService;
 import org.example.logic.user.model.User;
-import org.example.logic.user.service.IUserService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class MediaUpdateHandler extends BaseHandler implements HttpHandler {
-    private final IMediaService mediaService;
+public class RatingEditHandler extends BaseHandler implements HttpHandler {
+    private final IRatingService ratingService;
 
-    public MediaUpdateHandler(IMediaService mediaService) {
-        this.mediaService = mediaService;
+    public RatingEditHandler(IRatingService ratingService) {
+        this.ratingService = ratingService;
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-
         // Verify correct request method
         boolean valid = verifyRequestMethod(exchange, "PUT");
         if (!valid) return;
@@ -39,6 +35,7 @@ public class MediaUpdateHandler extends BaseHandler implements HttpHandler {
         if (loggedInUser == null) {
             return;
         }
+        //System.out.println("Authenticated loggedInUser ID: " + loggedInUser.getId() + ", username: " + loggedInUser.getUsername());
 
         // Debugging
         //System.out.println("User is authorized: " + loggedInUser.getUsername());
@@ -46,7 +43,7 @@ public class MediaUpdateHandler extends BaseHandler implements HttpHandler {
         // Read InputStream
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes());
-        // System.out.println("Received: " + body);
+        //System.out.println("Received: " + body);
 
         // Use Jackson ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
@@ -59,15 +56,12 @@ public class MediaUpdateHandler extends BaseHandler implements HttpHandler {
             return;
         }
 
-        //System.out.println("ID: " + id);
+        Rating ratingToUpdate;
 
-        MediaEntry mediaToUpdate;
-
-        // find media entry that needs to be changed
         try {
-            mediaToUpdate = mediaService.getMediaEntryByIndex(id);
-            if (mediaToUpdate == null) {
-                sendResponse(exchange, 404, Map.of("message", "Media not found"), mapper);
+            ratingToUpdate = ratingService.getRatingByIndex(id);
+            if (ratingToUpdate == null) {
+                sendResponse(exchange, 404, Map.of("message", "Rating not found"), mapper);
                 return;
             }
         } catch (RuntimeException e) {
@@ -76,47 +70,38 @@ public class MediaUpdateHandler extends BaseHandler implements HttpHandler {
             return;
         }
 
-        System.out.println("Media to update will be: " + mediaToUpdate);
+        System.out.println("Rating to update will be: " + ratingToUpdate);
 
         JsonNode jsonNode = mapper.readTree(body);
-        if (jsonNode.has("title")) {
-            mediaToUpdate.setTitle(jsonNode.get("title").asText());
+        if (jsonNode.has("stars")) {
+            ratingToUpdate.setStars(jsonNode.get("stars").asInt());
         }
-        if (jsonNode.has("description")) {
-            mediaToUpdate.setDescription(jsonNode.get("description").asText());
-        }
-        if (jsonNode.has("type")) {
-            mediaToUpdate.setType(MediaType.valueOf(jsonNode.get("type").asText().toUpperCase()));
-        }
-        if (jsonNode.has("releaseYear")) {
-            mediaToUpdate.setReleaseYear(jsonNode.get("releaseYear").asInt());
-        }
-        if (jsonNode.has("genre")) {
-            mediaToUpdate.setGenre(jsonNode.get("genre").asText());
-        }
-        if (jsonNode.has("ageRestriction")) {
-            mediaToUpdate.setAgeRestriction(jsonNode.get("ageRestriction").asBoolean());
+        if (jsonNode.has("comment")) {
+            ratingToUpdate.setComment(jsonNode.get("comment").asText());
         }
 
-        System.out.println("Updated media will be: " + mediaToUpdate);
+        System.out.println("Updated media will be: " + ratingToUpdate);
 
         try {
-            boolean success = mediaService.updateMediaEntry(loggedInUser, mediaToUpdate);
+            boolean success = ratingService.updateRating(loggedInUser, ratingToUpdate);
 
             // Build response
             Map<String, String> responseObject = new HashMap<>();
 
             // Response depends on state
             if (success) {
-                responseObject.put("message", "Media entry updated successfully");
+                responseObject.put("message", "Rating updated successfully");
                 sendResponse(exchange, 201, responseObject, mapper);
             } else {
                 responseObject.put("message", "Ownership error");
-                sendResponse(exchange, 409, responseObject, mapper);
+                sendResponse(exchange, 400, responseObject, mapper);
             }
-        } catch (RuntimeException e) {
-            // If any SQL error occurs, return a server error
-            sendResponse(exchange, 500, Map.of("message", "Database error"), mapper);
+        } catch (IllegalStateException e) {
+            sendResponse(exchange, 409, Map.of("message", e.getMessage()), mapper);
         }
+        catch (RuntimeException e) {
+            sendResponse(exchange, 500, Map.of("message", "Internal server error"), mapper);
+        }
+
     }
 }

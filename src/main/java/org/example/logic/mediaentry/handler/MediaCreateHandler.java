@@ -55,24 +55,22 @@ public class MediaCreateHandler extends BaseHandler implements HttpHandler {
 
         try {
             // Now send media entry object to mediaService
-            String responseMessage = mediaService.createMediaEntry(user, mediaEntry);
+            boolean success = mediaService.createMediaEntry(user, mediaEntry);
 
             // Build response
             Map<String, String> responseObject = new HashMap<>();
 
             // Response depends on state
-            if (responseMessage.equals("success")) {
+            if (success) {
                 responseObject.put("message", "Media entry created successfully");
                 sendResponse(exchange, 201, responseObject, mapper);
             } else {
                 responseObject.put("message", "An error has occurred");
                 sendResponse(exchange, 409, responseObject, mapper);
             }
-        } catch (Exception e) {
-            // Catch unexpected exceptions
-            Map<String, String> responseObject = new HashMap<>();
-            responseObject.put("message", "Server error: " + e.getMessage());
-            sendResponse(exchange, 500, responseObject, mapper);
+        } catch (RuntimeException e) {
+            // If any SQL error occurs, return a server error
+            sendResponse(exchange, 500, Map.of("message", "Database error"), mapper);
         }
     }
 }

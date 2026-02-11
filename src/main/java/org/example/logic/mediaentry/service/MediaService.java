@@ -12,13 +12,13 @@ public class MediaService implements IMediaService {
     }
 
     @Override
-    public String createMediaEntry(User user, MediaEntry mediaEntry) {
-        // Set creator from authenticated user, otherwise it's buggy
+    public boolean createMediaEntry(User user, MediaEntry mediaEntry) {
+        // Creator has to be the logged-in user
         mediaEntry.setCreatorId(user.getId());
 
         repository.createMediaEntry(user, mediaEntry);
 
-        return "success";
+        return true;
     }
 
     @Override
@@ -29,27 +29,20 @@ public class MediaService implements IMediaService {
     }
 
     @Override
-    public String viewMediaEntry(User user, int index) {
-        repository.viewMediaEntry(user, index);
-
-        return "success";
-    }
-
-    @Override
     public MediaEntry getMediaEntryByIndex(int id) {
         return repository.getMediaEntryById(id);
     }
 
     @Override
-    public String updateMediaEntry(User loggedInUser, MediaEntry mediaEntry) {
+    public boolean updateMediaEntry(User loggedInUser, MediaEntry mediaEntry) {
 
         // Validate ownership
         if (mediaEntry.getCreatorId() != loggedInUser.getId())
-            return "forbidden";
+            return false;
 
         repository.updateMediaEntry(mediaEntry);
 
-        return "success";
+        return true;
     }
 
     @Override

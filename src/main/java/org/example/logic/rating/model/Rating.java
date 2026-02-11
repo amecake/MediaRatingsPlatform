@@ -11,6 +11,9 @@ public class Rating {
     // From library
     private LocalDateTime timestamp;
 
+    private boolean confirmed;
+    private int likes;
+
     // For Jackson ObjectMapper
     public Rating() {};
 
@@ -71,5 +74,21 @@ public class Rating {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
     }
 }

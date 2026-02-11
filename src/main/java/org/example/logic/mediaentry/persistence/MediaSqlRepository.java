@@ -37,12 +37,7 @@ public class MediaSqlRepository implements IMediaRepository {
 
     @Override
     public void listMediaEntries(User user) {
-        user.listMediaEntries();
-    }
-
-    @Override
-    public void viewMediaEntry(User user, int index) {
-        user.viewMediaEntry(index);
+        //user.listMediaEntries();
     }
 
     @Override

@@ -42,22 +42,16 @@ public class RatingAddHandler extends BaseHandler implements HttpHandler {
         // Read InputStream
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes());
-        System.out.println("Received: " + body);
+        //System.out.println("Received: " + body);
 
         // Use Jackson ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
         // Get ID from path
-        String path = exchange.getRequestURI().getPath(); //  /rating/create/1
-        String[] parts = path.split("/");
-        int id;
-
-        // Check if it's an int
-        try {
-            id = Integer.parseInt(parts[parts.length - 1]);
-        } catch (NumberFormatException e) {
-            sendResponse(exchange, 400, Map.of("message", "Not an integer"), mapper);
+        Integer id = extractIdFromPath(exchange);
+        if (id == null) {
+            sendResponse(exchange, 400, Map.of("message", "Invalid ID"), mapper);
             return;
         }
 
@@ -65,17 +59,24 @@ public class RatingAddHandler extends BaseHandler implements HttpHandler {
         Rating rating = mapper.readValue(body, Rating.class);
         System.out.println("Parsed Rating: " + rating);
 
-        String responseMessage = ratingService.addRatingToMedia(user, rating, id);
+        try {
+            String responseMessage = ratingService.addRatingToMedia(user, rating, id);
 
-        // Build response
-        Map<String, String> responseObject = new HashMap<>();
+            // Build response
+            Map<String, String> responseObject = new HashMap<>();
 
-        if (responseMessage.equals("success")) {
-            responseObject.put("message", "Rating added successfully");
-            sendResponse(exchange, 201, responseObject, mapper);
-        } else {
-            responseObject.put("message", "An error has occurred");
-            sendResponse(exchange, 409, responseObject, mapper);
+            if (responseMessage.equals("success")) {
+                responseObject.put("message", "Rating added successfully");
+                sendResponse(exchange, 201, responseObject, mapper);
+            } else {
+                responseObject.put("message", responseMessage);
+                sendResponse(exchange, 400, responseObject, mapper);
+            }
+        } catch (IllegalStateException e) {
+            sendResponse(exchange, 409, Map.of("message", e.getMessage()), mapper);
+        }
+        catch (RuntimeException e) {
+            sendResponse(exchange, 500, Map.of("message", "Internal server error"), mapper);
         }
 
 
