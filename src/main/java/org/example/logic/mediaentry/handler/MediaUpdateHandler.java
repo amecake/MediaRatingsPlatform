@@ -11,13 +11,10 @@ import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.mediaentry.model.MediaType;
 import org.example.logic.mediaentry.service.IMediaService;
 import org.example.logic.user.model.User;
-import org.example.logic.user.service.IUserService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MediaUpdateHandler extends BaseHandler implements HttpHandler {

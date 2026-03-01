@@ -1,7 +1,6 @@
 package org.example.logic.user.persistence;
 
 // Always need to import files (like include in C++)
-import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.user.model.User;
 
 import java.util.Map;

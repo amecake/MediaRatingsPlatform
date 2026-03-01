@@ -15,7 +15,7 @@ public class Rating {
     private int likes;
 
     // For Jackson ObjectMapper
-    public Rating() {};
+    public Rating() {}
 
     public Rating(int stars, String comment) {
         this.stars = stars;

@@ -68,7 +68,6 @@ public class MediaViewHandler extends BaseHandler implements HttpHandler {
         } catch (RuntimeException e) {
             // If any SQL error occurs, return a server error
             sendResponse(exchange, 500, Map.of("message", "Database error"), mapper);
-            return;
         }
 
     }

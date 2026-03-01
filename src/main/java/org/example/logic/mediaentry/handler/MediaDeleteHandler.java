@@ -8,7 +8,6 @@ import com.sun.net.httpserver.HttpHandler;
 import org.example.logic.BaseHandler;
 import org.example.logic.mediaentry.service.IMediaService;
 import org.example.logic.user.model.User;
-import org.example.logic.user.service.IUserService;
 
 import java.io.IOException;
 import java.io.InputStream;

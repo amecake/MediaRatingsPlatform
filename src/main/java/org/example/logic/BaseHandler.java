@@ -6,7 +6,6 @@ import org.example.logic.user.model.User;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 
 // Abstract in this case means i can't instantiate BaseHandler directly
 public abstract class BaseHandler {

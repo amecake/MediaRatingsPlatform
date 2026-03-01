@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.example.logic.BaseHandler;
-import org.example.logic.mediaentry.model.MediaType;
 import org.example.logic.rating.model.Rating;
 import org.example.logic.rating.service.IRatingService;
 import org.example.logic.user.model.User;

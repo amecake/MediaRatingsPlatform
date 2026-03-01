@@ -1,8 +1,6 @@
 package org.example.logic.rating.persistence;
 
 import org.example.logic.DatabaseManager;
-import org.example.logic.mediaentry.model.MediaEntry;
-import org.example.logic.mediaentry.model.MediaType;
 import org.example.logic.rating.model.Rating;
 import org.example.logic.user.model.User;
 

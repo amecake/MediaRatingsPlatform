@@ -1,6 +1,5 @@
 package org.example.logic.rating.service;
 
-import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.rating.model.Rating;
 import org.example.logic.rating.persistence.IRatingRepository;
 import org.example.logic.user.model.User;

@@ -1,6 +1,5 @@
 package org.example.logic.user.service;
 
-import org.example.logic.mediaentry.model.MediaEntry;
 import org.example.logic.user.model.User;
 import org.example.logic.user.persistence.IUserRepository;
 
